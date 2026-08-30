@@ -1,25 +1,21 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "quickmail",
+	"name": "mapped-agency-mail",
 	"main": ".svelte-kit/cloudflare/_worker.js",
 	"compatibility_date": "2025-06-01",
 	"compatibility_flags": ["nodejs_compat", "enable_nodejs_http_modules"],
 	"workers_dev": true,
-
-	// Your Cloudflare account is picked up from `wrangler login`. If you belong
-	// to more than one account, set CLOUDFLARE_ACCOUNT_ID in your environment
-	// or uncomment this and paste the ID from the Cloudflare dashboard sidebar.
-	// "account_id": "",
+	"account_id": "74596e746968279673564ea9015045d7",
 
 	// Deploys to <name>.<your-subdomain>.workers.dev out of the box. To serve it
 	// from your own domain instead, uncomment this and make sure the zone is on
 	// the same Cloudflare account.
-	// "routes": [
-	// 	{
-	// 		"pattern": "mail.example.com",
-	// 		"custom_domain": true
-	// 	}
-	// ],
+	"routes": [
+		{
+			"pattern": "mail.mapped.agency",
+			"custom_domain": true
+		}
+	],
 
 	"assets": {
 		"directory": ".svelte-kit/cloudflare",
@@ -31,7 +27,7 @@
 	// Resend secrets (when EMAIL_PROVIDER=resend or unset):
 	//   wrangler secret put RESEND_API_KEY
 	//   wrangler secret put RESEND_WEBHOOK_SECRET
-	// Cloudflare Email uses the send_email binding below plus CLOUDFLARE_MAIL_DOMAINS.
+	// Cloudflare Email uses a send_email binding plus CLOUDFLARE_MAIL_DOMAINS.
 	// Locally, put values in .dev.vars (copy .dev.vars.example).
 
 	"vars": {
@@ -41,19 +37,12 @@
 		"CLOUDFLARE_MAIL_DOMAINS": "example.com"
 	},
 
-	"send_email": [
-		{
-			"name": "EMAIL",
-			"remote": true
-		}
-	],
-
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "quickmail",
+			"database_name": "mapped-agency-mail",
 			// `bun run setup` fills this in, or: wrangler d1 create <name>
-			"database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID",
+			"database_id": "4b9607bb-aceb-4969-ab74-5926d418e126",
 			"migrations_dir": "migrations"
 		}
 	],
@@ -62,7 +51,7 @@
 		{
 			"binding": "ATTACHMENTS",
 			// `bun run setup` creates this, or: wrangler r2 bucket create <name>
-			"bucket_name": "quickmail-attachments"
+			"bucket_name": "mapped-agency-mail-attachments"
 		}
 	],
 
