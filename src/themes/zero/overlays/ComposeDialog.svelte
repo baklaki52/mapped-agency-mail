@@ -2,6 +2,11 @@
 	import { invalidateAll } from '$app/navigation';
 	import RichTextEditor from '$lib/components/RichTextEditor.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
+	import {
+		detectEmailTemplateId,
+		emailTemplateHtml,
+		type EmailTemplateId
+	} from '$lib/email-templates';
 	import { htmlToPlainText, isHtmlEmpty } from '$lib/utils/html';
 	import type { MailAddress, OutboundAttachmentInput } from '$lib/types';
 	import Icon from '../icons/Icon.svelte';
@@ -30,6 +35,7 @@
 	let bcc = $state('');
 	let subject = $state('');
 	let html = $state('');
+	let templateId = $state<EmailTemplateId | ''>('');
 	let attachments = $state<OutboundAttachmentInput[]>([]);
 	let showCc = $state(false);
 	let showBcc = $state(false);
@@ -43,7 +49,10 @@
 
 	$effect(() => {
 		const id = draftId;
-		if (!id) return;
+		if (!id) {
+			templateId = '';
+			return;
+		}
 		void fetch(`/api/drafts/${id}`)
 			.then(async (response) => {
 				const draft = (await response.json()) as {
@@ -67,6 +76,7 @@
 				bcc = draft.bcc_addr ?? '';
 				subject = draft.subject ?? '';
 				html = draft.body_html || draft.body_text || '';
+				templateId = detectEmailTemplateId(html);
 				if (draft.address_id) chosenAddressId = draft.address_id;
 				showCc = Boolean(draft.cc_addr);
 				showBcc = Boolean(draft.bcc_addr);
@@ -77,6 +87,20 @@
 	});
 
 	const hasDraftText = $derived(Boolean(to.trim() || subject.trim() || !isHtmlEmpty(html)));
+
+	function chooseTemplate(event: Event) {
+		const select = event.currentTarget as HTMLSelectElement;
+		const next = select.value as EmailTemplateId | '';
+		if (next === templateId) return;
+
+		if (!isHtmlEmpty(html) && !window.confirm(t('compose.replaceWithTemplate'))) {
+			select.value = templateId;
+			return;
+		}
+
+		templateId = next;
+		html = next ? emailTemplateHtml(next) : '';
+	}
 
 	async function saveDraft(): Promise<boolean> {
 		if (savingDraft || !hasDraftText) return false;
@@ -229,6 +253,13 @@
 
 			<ComposerActions bind:attachments sending={sending} error={error}>
 				{#snippet extra()}
+					<label class="z-template-picker">
+						<span>{t('compose.template')}</span>
+						<select value={templateId} onchange={chooseTemplate}>
+							<option value="">{t('compose.blankEmail')}</option>
+							<option value="mapped-research">{t('compose.researchProposal')}</option>
+						</select>
+					</label>
 					<button
 						type="button"
 						class="z-text-btn"

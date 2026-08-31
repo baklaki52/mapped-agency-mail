@@ -26,6 +26,9 @@ declare global {
 				VAPID_PRIVATE_KEY?: string;
 				/** A mailto: or https: contact URI for Web Push. */
 				VAPID_SUBJECT?: string;
+				/** Telegram bot credentials used for private new-mail notifications. */
+				TELEGRAM_BOT_TOKEN?: string;
+				TELEGRAM_CHAT_ID?: string;
 			};
 		}
 		interface Locals {

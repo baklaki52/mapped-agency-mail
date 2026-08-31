@@ -220,6 +220,10 @@
 		"pageTitle": "{folder} — {app}"
 	},
 	"compose": {
+		"template": "Template",
+		"blankEmail": "Blank email",
+		"researchProposal": "Research proposal",
+		"replaceWithTemplate": "Replace the current message with this template?",
 		"title": "Compose — {app}",
 		"draftTitle": "Draft — {app}",
 		"draft": "Draft",

@@ -6,6 +6,7 @@ import { recordUnroutedEmail, resolveInboundRoute } from './domains';
 import { collectInboundRecipients, parseEmailAddress } from './email-address';
 import { emailExistsByProviderId, insertEmail } from './mail-store';
 import { scheduleNewMailNotification, type PushNotificationEnv } from './push-notifications';
+import { scheduleTelegramMailNotification } from './telegram-notifications';
 import { normalizeMessageId } from './send-mail';
 
 export type CloudflareInboundMessage = {
@@ -93,6 +94,11 @@ export async function handleCloudflareInbound(
 	await scheduleNewMailNotification(env, {
 		emailId,
 		userId: route.userId,
+		from: sender?.name || from,
+		subject
+	});
+	scheduleTelegramMailNotification(env, {
+		emailId,
 		from: sender?.name || from,
 		subject
 	});

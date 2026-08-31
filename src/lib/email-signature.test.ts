@@ -49,6 +49,20 @@ import {
 		);
 	});
 
+	test('does not duplicate a signature embedded by a trusted email template', () => {
+		assert.deepEqual(
+			appendEmailSignature({
+				text: 'Hello\n\nBest regards,\nVlad',
+				html: '<p>Hello</p><div data-email-signature="true">Best regards,<br>Vlad</div>',
+				signature: 'Best regards,\nVlad'
+			}),
+			{
+				text: 'Hello\n\nBest regards,\nVlad',
+				html: '<p>Hello</p><div data-email-signature="true">Best regards,<br>Vlad</div>'
+			}
+		);
+	});
+
 	test('picks a mailbox signature over the account signature', () => {
 		assert.equal(pickEmailSignature('Support', 'Best,\nEmmanuel'), 'Support');
 		assert.equal(pickEmailSignature('  ', 'Best,\nEmmanuel'), 'Best,\nEmmanuel');

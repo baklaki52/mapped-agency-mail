@@ -220,6 +220,10 @@
 		"pageTitle": "{folder} — {app}"
 	},
 	"compose": {
+		"template": "Plantilla",
+		"blankEmail": "Correo en blanco",
+		"researchProposal": "Propuesta de investigación",
+		"replaceWithTemplate": "¿Reemplazar el mensaje actual con esta plantilla?",
 		"title": "Redactar — {app}",
 		"draftTitle": "Borrador — {app}",
 		"draft": "Borrador",

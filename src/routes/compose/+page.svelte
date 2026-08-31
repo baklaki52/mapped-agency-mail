@@ -4,6 +4,11 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import RichTextEditor from '$lib/components/RichTextEditor.svelte';
 	import AttachmentPicker from '$lib/components/AttachmentPicker.svelte';
+	import {
+		detectEmailTemplateId,
+		emailTemplateHtml,
+		type EmailTemplateId
+	} from '$lib/email-templates';
 	import { htmlToPlainText, isHtmlEmpty } from '$lib/utils/html';
 	import { requestSkipViewTransition } from '$lib/app-chrome';
 	import { APP_NAME } from '$lib/constants';
@@ -31,6 +36,9 @@
 	let bcc = $state(draft?.bcc_addr ?? '');
 	let subject = $state(draft?.subject ?? '');
 	let html = $state(draft?.body_html || draft?.body_text || '');
+	let templateId = $state<EmailTemplateId | ''>(
+		detectEmailTemplateId(draft?.body_html || draft?.body_text || '')
+	);
 	let attachments = $state<OutboundAttachmentInput[]>([]);
 	let showCopies = $state(Boolean(draft?.cc_addr || draft?.bcc_addr));
 	let error = $state('');
@@ -39,6 +47,20 @@
 	let savedAt = $state('');
 
 	const hasDraftText = $derived(Boolean(to.trim() || subject.trim() || !isHtmlEmpty(html)));
+
+	function chooseTemplate(event: Event) {
+		const select = event.currentTarget as HTMLSelectElement;
+		const next = select.value as EmailTemplateId | '';
+		if (next === templateId) return;
+
+		if (!isHtmlEmpty(html) && !window.confirm(t('compose.replaceWithTemplate'))) {
+			select.value = templateId;
+			return;
+		}
+
+		templateId = next;
+		html = next ? emailTemplateHtml(next) : '';
+	}
 
 	async function saveDraft(): Promise<boolean> {
 		if (savingDraft || !hasDraftText) return false;
@@ -154,6 +176,15 @@
 			<h1 class="page-title">{draftId ? t('compose.draft') : t('nav.compose')}</h1>
 			{#if savedAt}<span class="saved">{t('common.savedAt', { time: savedAt })}</span>{/if}
 		</div>
+		<select
+			class="mobile-template-picker"
+			value={templateId}
+			onchange={chooseTemplate}
+			aria-label={t('compose.template')}
+		>
+			<option value="">{t('compose.blankEmail')}</option>
+			<option value="mapped-research">{t('compose.researchProposal')}</option>
+		</select>
 		<button type="submit" class="btn-primary" disabled={sending}>
 			{sending ? t('common.sending') : t('common.send')}
 		</button>
@@ -166,6 +197,13 @@
 		</div>
 
 		<div class="compose-actions">
+			<label class="template-picker">
+				<span>{t('compose.template')}</span>
+				<select value={templateId} onchange={chooseTemplate}>
+					<option value="">{t('compose.blankEmail')}</option>
+					<option value="mapped-research">{t('compose.researchProposal')}</option>
+				</select>
+			</label>
 			<button
 				type="button"
 				class="btn-ghost"
@@ -335,6 +373,23 @@
 		gap: 0.5rem;
 	}
 
+	.template-picker {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		font-size: 0.75rem;
+		color: var(--color-muted);
+	}
+
+	.template-picker select {
+		min-height: 2.25rem;
+		padding: 0 1.75rem 0 0.625rem;
+		border: 1px solid var(--color-line);
+		border-radius: 0.625rem;
+		background: var(--color-surface);
+		color: var(--color-text);
+	}
+
 	.compose-fields {
 		overflow: hidden;
 	}
@@ -359,6 +414,10 @@
 	}
 
 	.compose-mobile-bar {
+		display: none;
+	}
+
+	.mobile-template-picker {
 		display: none;
 	}
 
@@ -418,6 +477,16 @@
 
 		.compose-mobile-bar .btn-primary {
 			min-width: 4.5rem;
+		}
+
+		.mobile-template-picker {
+			display: block;
+			width: 2.5rem;
+			min-height: var(--touch-target);
+			border: 0;
+			background: transparent;
+			color: transparent;
+			font-size: 0;
 		}
 
 		.compose-fields {

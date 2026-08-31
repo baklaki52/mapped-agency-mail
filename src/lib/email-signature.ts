@@ -42,6 +42,13 @@ export function appendEmailSignature(input: {
 	html: string | null;
 	signature: string;
 }): { text: string; html: string | null } {
+	// Trusted templates carry their own designed sign-off. The text alternative
+	// is derived from that HTML, so adding the account signature would duplicate
+	// the sender details in both MIME alternatives.
+	if (input.html?.includes('data-email-signature="true"')) {
+		return { text: input.text, html: input.html };
+	}
+
 	const signature = normalizeEmailSignature(input.signature);
 	if (!signature) return { text: input.text, html: input.html };
 

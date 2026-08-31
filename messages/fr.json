@@ -220,6 +220,10 @@
 		"pageTitle": "{folder} — {app}"
 	},
 	"compose": {
+		"template": "Modèle",
+		"blankEmail": "E-mail vierge",
+		"researchProposal": "Proposition de recherche",
+		"replaceWithTemplate": "Remplacer le message actuel par ce modèle ?",
 		"title": "Composer — {app}",
 		"draftTitle": "Brouillon — {app}",
 		"draft": "Brouillon",

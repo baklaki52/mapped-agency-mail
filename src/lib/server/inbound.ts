@@ -1,11 +1,13 @@
 import type { D1Database, R2Bucket } from '@cloudflare/workers-types';
 import type { DeliveryStatus } from '$lib/types';
+import { countThreadMessages, sendAutoReply, shouldSendAutoReply } from './auto-reply';
 import { insertAttachmentBytes } from './attachments';
 import { MAX_ATTACHMENT_BYTES, MAX_ATTACHMENTS_PER_EMAIL, MAX_BODY_BYTES } from './constants';
 import { collectInboundRecipients, parseEmailIdentity } from './email-address';
 import { recordUnroutedEmail, resolveInboundRoute } from './domains';
 import { emailExistsByProviderId, insertEmail, updateEmailStatusByProviderId } from './mail-store';
 import { scheduleNewMailNotification, type PushNotificationEnv } from './push-notifications';
+import { scheduleTelegramMailNotification } from './telegram-notifications';
 import type { ResendClient } from './resend';
 
 export type ResendWebhookEvent = {
@@ -142,6 +144,41 @@ async function handleInboundEmail(
 		from: sender.name || from,
 		subject
 	});
+	scheduleTelegramMailNotification(env, {
+		emailId,
+		from: sender.name || from,
+		subject
+	});
+
+	const inReplyTo = received.headers?.['in-reply-to'] ?? null;
+	const references = received.headers?.['references'] ?? null;
+	const threadMessageCount = await countThreadMessages(env.DB, route.userId, emailId);
+	if (
+		shouldSendAutoReply({
+			from,
+			routeAddress: route.address,
+			headers: received.headers,
+			inReplyTo,
+			references,
+			threadMessageCount
+		})
+	) {
+		// Receipt of the inquiry is authoritative; an unavailable provider must
+		// never make Resend retry and duplicate the stored inbound message.
+		try {
+			await sendAutoReply({
+				db: env.DB,
+				client,
+				route,
+				inboundEmailId: emailId,
+				recipient: from,
+				messageId: received.message_id,
+				references
+			});
+		} catch (error) {
+			console.error('Failed to send automatic inquiry reply', emailId, error);
+		}
+	}
 
 	return {
 		handled: true,
