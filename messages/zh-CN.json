@@ -222,6 +222,7 @@
 	"compose": {
 		"template": "模板",
 		"blankEmail": "空白邮件",
+		"mappedMessage": "MAPPED 邮件",
 		"researchProposal": "研究方案",
 		"replaceWithTemplate": "要用此模板替换当前邮件吗？",
 		"title": "撰写 — {app}",

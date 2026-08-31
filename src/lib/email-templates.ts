@@ -1,4 +1,4 @@
-export const EMAIL_TEMPLATE_IDS = ['mapped-research'] as const;
+export const EMAIL_TEMPLATE_IDS = ['mapped-message', 'mapped-research'] as const;
 
 export type EmailTemplateId = (typeof EMAIL_TEMPLATE_IDS)[number];
 
@@ -11,9 +11,10 @@ const SIGN_OFF = `
   <a href="https://mapped.agency" style="color:#E2453C;text-decoration:none;">mapped.agency</a> · <a href="mailto:hello@mapped.agency" style="color:#E2453C;text-decoration:none;">hello@mapped.agency</a>
 </div>`.trim();
 
-function mappedShell(content: string, preheader: string): string {
+function mappedShell(content: string, preheader: string, templateId?: EmailTemplateId): string {
+	const templateMarker = templateId ? ` data-email-template="${templateId}"` : '';
 	return `
-<div data-email-template="mapped-research" style="margin:0;padding:0;background-color:#F5EDE9;">
+<div${templateMarker} style="margin:0;padding:0;background-color:#F5EDE9;">
   <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">${preheader}</div>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5EDE9;">
     <tr><td align="center" style="padding:24px 12px;">
@@ -51,13 +52,27 @@ const MAPPED_RESEARCH_TEMPLATE = mappedShell(
   </table>
 </td></tr>
 <tr><td style="background-color:#FFFFFF;padding:8px 28px 34px;">
-  <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background-color:#E2453C;"><a href="https://mapped.agency/#ask" style="display:inline-block;padding:15px 30px;font-family:Arial,Helvetica,sans-serif;font-size:13px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;color:#1F1509;text-decoration:none;">Confirm the scope</a></td></tr></table>
+  <div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#221A14;">If this scope works for you, reply to this email and we’ll confirm the timeline and next steps.</div>
 </td></tr>`,
-	'Your research scope and timing — one short review inside.'
+	'Your research scope and timing — one short review inside.',
+	'mapped-research'
+);
+
+const MAPPED_MESSAGE_TEMPLATE = mappedShell(
+	`<tr><td style="background-color:#FFFFFF;padding:32px 28px 34px;">
+  <div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.7;color:#221A14;">
+    Hi [Name],<br><br>
+    [Write your message here.]
+  </div>
+</td></tr>`,
+	'A message from MAPPED.AGENCY.',
+	'mapped-message'
 );
 
 export function emailTemplateHtml(id: EmailTemplateId): string {
 	switch (id) {
+		case 'mapped-message':
+			return MAPPED_MESSAGE_TEMPLATE;
 		case 'mapped-research':
 			return MAPPED_RESEARCH_TEMPLATE;
 	}
@@ -89,7 +104,10 @@ mapped.agency · hello@mapped.agency`;
 }
 
 export function detectEmailTemplateId(html: string): EmailTemplateId | '' {
-	return html.includes('data-email-template="mapped-research"') ? 'mapped-research' : '';
+	for (const id of EMAIL_TEMPLATE_IDS) {
+		if (html.includes(`data-email-template="${id}"`)) return id;
+	}
+	return '';
 }
 
 export function hasEmbeddedEmailSignature(html: string | null | undefined): boolean {

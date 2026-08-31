@@ -19,6 +19,19 @@ describe('MAPPED email templates', () => {
 		assert.match(html, /Exhaustive Research\. Trustworthy Answers\./);
 		assert.match(html, /href="https:\/\/mapped\.agency"/);
 		assert.match(html, /href="mailto:hello@mapped\.agency"/);
+		assert.doesNotMatch(html, /Confirm the scope/i);
+		assert.match(html, /reply to this email and we’ll confirm the timeline and next steps/);
+	});
+
+	test('renders a lightweight branded message for ordinary correspondence', () => {
+		const html = emailTemplateHtml('mapped-message');
+
+		assert.equal(detectEmailTemplateId(html), 'mapped-message');
+		assert.equal(hasEmbeddedEmailSignature(html), true);
+		assert.match(html, /Hi \[Name\]/);
+		assert.match(html, /\[Write your message here\.\]/);
+		assert.doesNotMatch(html, /\[ scope \]/);
+		assert.doesNotMatch(html, /Confirm the scope/i);
 	});
 
 	test('renders a lightweight auto-reply without proposal-only blocks', () => {
@@ -27,6 +40,7 @@ describe('MAPPED email templates', () => {
 		assert.match(html, /Request received/);
 		assert.match(html, /simply reply to this email/);
 		assert.doesNotMatch(html, /\[ scope \]/);
+		assert.equal(detectEmailTemplateId(html), '');
 		assert.match(autoReplyText(), /Best regards,\nVlad Spitsyn/);
 	});
 

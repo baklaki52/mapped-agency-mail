@@ -222,6 +222,7 @@
 	"compose": {
 		"template": "Template",
 		"blankEmail": "Blank email",
+		"mappedMessage": "MAPPED message",
 		"researchProposal": "Research proposal",
 		"replaceWithTemplate": "Replace the current message with this template?",
 		"title": "Compose — {app}",
