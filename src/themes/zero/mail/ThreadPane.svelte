@@ -7,6 +7,7 @@
 	import { htmlToPlainText, isHtmlEmpty } from '$lib/utils/html';
 	import { formatMailDate, formatMailTime, shouldShowSeparateTime } from '$lib/utils/date';
 	import { attachmentHref } from '$lib/utils/attachments';
+	import { emailTemplateHtml, type EmailTemplateId } from '$lib/email-templates';
 	import { runMailAction } from '$lib/mail/client';
 	import { initials, parseAddressList, type AddressPart } from '$lib/mail/folders';
 	import { t } from '$lib/i18n';
@@ -43,6 +44,7 @@
 	let replyMode = $state<ReplyMode>('reply');
 	let replyTarget = $state<ThreadMessage | null>(null);
 	let replyHtml = $state('');
+	let replyTemplateId = $state<EmailTemplateId | ''>('');
 	let replyTo = $state('');
 	let replyCc = $state('');
 	let showCc = $state(false);
@@ -235,11 +237,26 @@
 		showCc = Boolean(next.cc);
 		showBcc = false;
 		replyHtml = '';
+		replyTemplateId = '';
 		sendError = '';
 		attachments = [];
 		const nextOpened = new Set(opened);
 		nextOpened.add(message.id);
 		opened = nextOpened;
+	}
+
+	function chooseReplyTemplate(event: Event) {
+		const select = event.currentTarget as HTMLSelectElement;
+		const next = select.value as EmailTemplateId | '';
+		if (next === replyTemplateId) return;
+
+		if (!isHtmlEmpty(replyHtml) && !window.confirm(t('compose.replaceWithTemplate'))) {
+			select.value = replyTemplateId;
+			return;
+		}
+
+		replyTemplateId = next;
+		replyHtml = next ? emailTemplateHtml(next) : '';
 	}
 
 	function toggleOpened(messageId: string) {
@@ -321,6 +338,7 @@
 			}
 			replyOpen = false;
 			replyHtml = '';
+			replyTemplateId = '';
 			attachments = [];
 			await invalidateAll();
 		} finally {
@@ -626,7 +644,18 @@
 					<div class="z-composer-body">
 						<RichTextEditor bind:html={replyHtml} embedded minHeight={80} placeholder={t('compose.writeReplyPlaceholder')} />
 					</div>
-					<ComposerActions bind:attachments sending={sending} error={sendError} />
+					<ComposerActions bind:attachments sending={sending} error={sendError}>
+						{#snippet extra()}
+							<label class="z-template-picker">
+								<span>{t('compose.template')}</span>
+								<select value={replyTemplateId} onchange={chooseReplyTemplate}>
+									<option value="">{t('compose.blankEmail')}</option>
+									<option value="mapped-message">{t('compose.mappedMessage')}</option>
+									<option value="mapped-research">{t('compose.researchProposal')}</option>
+								</select>
+							</label>
+						{/snippet}
+					</ComposerActions>
 				</form>
 			{/if}
 		</div>

@@ -27,7 +27,7 @@ function mappedShell(content: string, preheader: string, templateId?: EmailTempl
         </td></tr>
         <tr><td style="background-color:#E2453C;height:3px;line-height:3px;font-size:3px;">&nbsp;</td></tr>
         ${content}
-        <tr><td style="padding:18px 28px 8px;border-top:1px solid #E8DCD5;">${SIGN_OFF}</td></tr>
+        <tr><td style="background-color:#FFFFFF;padding:18px 28px 8px;border-top:3px solid #E2453C;">${SIGN_OFF}</td></tr>
       </table>
     </td></tr>
   </table>
