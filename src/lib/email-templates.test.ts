@@ -18,7 +18,7 @@ describe('MAPPED email templates', () => {
 		assert.match(html, /Vlad Spitsyn/);
 		assert.match(html, /Exhaustive Research\. Trustworthy Answers\./);
 		assert.match(html, /href="https:\/\/mapped\.agency"/);
-		assert.match(html, /href="mailto:hello@mapped\.agency"/);
+		assert.match(html, /href="mailto:vlad\.spitsyn@mapped\.agency"/);
 		assert.doesNotMatch(html, /Confirm the scope/i);
 		assert.match(html, /reply to this email and we’ll confirm the timeline and next steps/);
 	});
@@ -42,6 +42,7 @@ describe('MAPPED email templates', () => {
 		assert.doesNotMatch(html, /\[ scope \]/);
 		assert.equal(detectEmailTemplateId(html), '');
 		assert.match(autoReplyText(), /Best regards,\nVlad Spitsyn/);
+		assert.match(autoReplyText(), /vlad\.spitsyn@mapped\.agency/);
 	});
 
 	test('does not classify an ordinary message as a template', () => {

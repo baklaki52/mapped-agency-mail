@@ -8,7 +8,7 @@ const SIGN_OFF = `
   <strong style="color:#221A14;">Vlad Spitsyn</strong><br>
   MAPPED.AGENCY<br>
   <em>Exhaustive Research. Trustworthy Answers.</em><br>
-  <a href="https://mapped.agency" style="color:#E2453C;text-decoration:none;">mapped.agency</a> · <a href="mailto:hello@mapped.agency" style="color:#E2453C;text-decoration:none;">hello@mapped.agency</a>
+  <a href="https://mapped.agency" style="color:#E2453C;text-decoration:none;">mapped.agency</a> · <a href="mailto:vlad.spitsyn@mapped.agency" style="color:#E2453C;text-decoration:none;">vlad.spitsyn@mapped.agency</a>
 </div>`.trim();
 
 function mappedShell(content: string, preheader: string, templateId?: EmailTemplateId): string {
@@ -100,7 +100,7 @@ Best regards,
 Vlad Spitsyn
 MAPPED.AGENCY
 Exhaustive Research. Trustworthy Answers.
-mapped.agency · hello@mapped.agency`;
+mapped.agency · vlad.spitsyn@mapped.agency`;
 }
 
 export function detectEmailTemplateId(html: string): EmailTemplateId | '' {
