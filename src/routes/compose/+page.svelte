@@ -183,6 +183,7 @@
 			aria-label={t('compose.template')}
 		>
 			<option value="">{t('compose.blankEmail')}</option>
+			<option value="mapped-simple">{t('compose.simpleSignature')}</option>
 			<option value="mapped-message">{t('compose.mappedMessage')}</option>
 			<option value="mapped-research">{t('compose.researchProposal')}</option>
 		</select>
@@ -202,6 +203,7 @@
 				<span>{t('compose.template')}</span>
 				<select value={templateId} onchange={chooseTemplate}>
 					<option value="">{t('compose.blankEmail')}</option>
+					<option value="mapped-simple">{t('compose.simpleSignature')}</option>
 					<option value="mapped-message">{t('compose.mappedMessage')}</option>
 					<option value="mapped-research">{t('compose.researchProposal')}</option>
 				</select>

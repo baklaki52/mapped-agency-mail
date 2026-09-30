@@ -36,6 +36,18 @@ describe('MAPPED email templates', () => {
 		assert.match(html, /max-width:600px;table-layout:fixed;overflow-wrap:anywhere/);
 	});
 
+	test('renders a plain-looking message with only the linked signature', () => {
+		const html = emailTemplateHtml('mapped-simple');
+
+		assert.equal(detectEmailTemplateId(html), 'mapped-simple');
+		assert.equal(hasEmbeddedEmailSignature(html), true);
+		assert.match(html, /Hi \[Name\]/);
+		assert.match(html, /href="https:\/\/mapped\.agency"/);
+		assert.match(html, /href="mailto:vlad\.spitsyn@mapped\.agency"/);
+		assert.doesNotMatch(html, /research&nbsp;desk/);
+		assert.doesNotMatch(html, /background-color:#1F1509/);
+	});
+
 	test('renders a lightweight auto-reply without proposal-only blocks', () => {
 		const html = autoReplyHtml();
 

@@ -222,6 +222,7 @@
 	"compose": {
 		"template": "Plantilla",
 		"blankEmail": "Correo en blanco",
+		"simpleSignature": "Firma simple",
 		"mappedMessage": "Mensaje MAPPED",
 		"researchProposal": "Propuesta de investigación",
 		"replaceWithTemplate": "¿Reemplazar el mensaje actual con esta plantilla?",

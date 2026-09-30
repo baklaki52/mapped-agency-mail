@@ -222,6 +222,7 @@
 	"compose": {
 		"template": "Template",
 		"blankEmail": "Blank email",
+		"simpleSignature": "Simple signature",
 		"mappedMessage": "MAPPED message",
 		"researchProposal": "Research proposal",
 		"replaceWithTemplate": "Replace the current message with this template?",
