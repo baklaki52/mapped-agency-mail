@@ -650,7 +650,6 @@
 								<span>{t('compose.template')}</span>
 								<select value={replyTemplateId} onchange={chooseReplyTemplate}>
 									<option value="">{t('compose.blankEmail')}</option>
-									<option value="mapped-simple">{t('compose.simpleSignature')}</option>
 									<option value="mapped-message">{t('compose.mappedMessage')}</option>
 									<option value="mapped-research">{t('compose.researchProposal')}</option>
 								</select>

@@ -34,4 +34,8 @@ test('linkifies bare URLs without nesting existing links', () => {
 		linkifyPlainUrls('<a href="https://mapped.agency">mapped.agency</a>'),
 		'<a href="https://mapped.agency">mapped.agency</a>'
 	);
+	assert.equal(
+		linkifyPlainUrls('<div>mapped.agency · vlad.spitsyn@mapped.agency</div>'),
+		'<div><a href="https://mapped.agency">mapped.agency</a> · <a href="mailto:vlad.spitsyn@mapped.agency">vlad.spitsyn@mapped.agency</a></div>'
+	);
 });

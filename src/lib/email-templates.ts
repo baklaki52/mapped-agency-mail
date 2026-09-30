@@ -1,4 +1,4 @@
-export const EMAIL_TEMPLATE_IDS = ['mapped-simple', 'mapped-message', 'mapped-research'] as const;
+export const EMAIL_TEMPLATE_IDS = ['mapped-message', 'mapped-research'] as const;
 
 export type EmailTemplateId = (typeof EMAIL_TEMPLATE_IDS)[number];
 
@@ -69,17 +69,8 @@ const MAPPED_MESSAGE_TEMPLATE = mappedShell(
 	'mapped-message'
 );
 
-const MAPPED_SIMPLE_TEMPLATE = `
-<div data-email-template="mapped-simple" style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.7;color:#221A14;overflow-wrap:anywhere;word-break:break-word;">
-  Hi [Name],<br><br>
-  [Write your message here.]<br><br><br>
-  ${SIGN_OFF}
-</div>`.trim();
-
 export function emailTemplateHtml(id: EmailTemplateId): string {
 	switch (id) {
-		case 'mapped-simple':
-			return MAPPED_SIMPLE_TEMPLATE;
 		case 'mapped-message':
 			return MAPPED_MESSAGE_TEMPLATE;
 		case 'mapped-research':

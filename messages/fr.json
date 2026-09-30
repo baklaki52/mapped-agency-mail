@@ -222,7 +222,6 @@
 	"compose": {
 		"template": "Modèle",
 		"blankEmail": "E-mail vierge",
-		"simpleSignature": "Signature simple",
 		"mappedMessage": "Message MAPPED",
 		"researchProposal": "Proposition de recherche",
 		"replaceWithTemplate": "Remplacer le message actuel par ce modèle ?",

@@ -38,11 +38,19 @@ export function linkifyPlainUrls(html: string): string {
 			}
 			if (insideAnchor) return part;
 
-			return part.replace(/\bhttps?:\/\/[^\s<>"']+/gi, (match) => {
+			return part.replace(
+				/\b(?:https?:\/\/[^\s<>"']+|[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}|mapped\.agency)\b/gi,
+				(match) => {
 				const trailing = match.match(/[),.!?;:]+$/)?.[0] ?? '';
-				const url = trailing ? match.slice(0, -trailing.length) : match;
-				return `<a href="${url}">${url}</a>${trailing}`;
-			});
+				const label = trailing ? match.slice(0, -trailing.length) : match;
+				const href = label.includes('@')
+					? `mailto:${label}`
+					: label.toLowerCase() === 'mapped.agency'
+						? 'https://mapped.agency'
+						: label;
+				return `<a href="${href}">${label}</a>${trailing}`;
+				}
+			);
 		})
 		.join('');
 }
