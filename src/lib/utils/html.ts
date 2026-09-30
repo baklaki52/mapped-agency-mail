@@ -24,6 +24,29 @@ export function isHtmlEmpty(html: string): boolean {
 	return !htmlToPlainText(html);
 }
 
+/** Turn bare HTTP(S) URLs in text nodes into links without touching existing anchors or attributes. */
+export function linkifyPlainUrls(html: string): string {
+	let insideAnchor = 0;
+
+	return html
+		.split(/(<[^>]+>)/g)
+		.map((part) => {
+			if (part.startsWith('<')) {
+				if (/^<a\b/i.test(part)) insideAnchor += 1;
+				if (/^<\/a\b/i.test(part)) insideAnchor = Math.max(0, insideAnchor - 1);
+				return part;
+			}
+			if (insideAnchor) return part;
+
+			return part.replace(/\bhttps?:\/\/[^\s<>"']+/gi, (match) => {
+				const trailing = match.match(/[),.!?;:]+$/)?.[0] ?? '';
+				const url = trailing ? match.slice(0, -trailing.length) : match;
+				return `<a href="${url}">${url}</a>${trailing}`;
+			});
+		})
+		.join('');
+}
+
 export function formatFileSize(bytes: number): string {
 	if (bytes < 1024) return `${bytes} B`;
 	if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;

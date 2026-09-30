@@ -1,4 +1,5 @@
 import type { MailAddress, OutboundAttachmentInput } from '$lib/types';
+import { linkifyPlainUrls } from '$lib/utils/html';
 import type { EmailProvider } from './email-provider';
 
 export type OutboundMailInput = {
@@ -64,7 +65,20 @@ export function validateSubject(subject: string): string | null {
 export function parseRecipients(value: string | string[] | undefined | null): string[] {
 	if (!value) return [];
 	const parts = Array.isArray(value) ? value : value.split(',');
-	return parts.map((part) => part.trim()).filter((part) => part.includes('@'));
+	const seen = new Set<string>();
+	return parts
+		.map((part) => part.trim())
+		.filter((part) => {
+			if (!part.includes('@')) return false;
+			const key = recipientKey(part);
+			if (seen.has(key)) return false;
+			seen.add(key);
+			return true;
+		});
+}
+
+function recipientKey(address: string): string {
+	return (address.match(/<([^>]+)>/)?.[1] ?? address).trim().toLowerCase();
 }
 
 /**
@@ -96,10 +110,16 @@ export async function sendOutboundEmail(
 		throw new Error('At least one valid recipient is required');
 	}
 
-	const cc = parseRecipients(input.cc);
-	const bcc = parseRecipients(input.bcc);
+	const toKeys = new Set(to.map(recipientKey));
+	const cc = parseRecipients(input.cc).filter((address) => !toKeys.has(recipientKey(address)));
+	const visibleKeys = new Set([...toKeys, ...cc.map(recipientKey)]);
+	const bcc = parseRecipients(input.bcc).filter(
+		(address) => !visibleKeys.has(recipientKey(address))
+	);
 	const safeText = input.text.trim();
-	const bodyHtml = input.html?.trim() || escapeHtml(safeText).replaceAll('\n', '<br>\n');
+	const bodyHtml = linkifyPlainUrls(
+		input.html?.trim() || escapeHtml(safeText).replaceAll('\n', '<br>\n')
+	);
 
 	const headers: Record<string, string> = { ...input.headers };
 	const inReplyTo = formatMessageId(input.inReplyTo);

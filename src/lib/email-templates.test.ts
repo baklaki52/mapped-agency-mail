@@ -32,6 +32,8 @@ describe('MAPPED email templates', () => {
 		assert.match(html, /\[Write your message here\.\]/);
 		assert.doesNotMatch(html, /\[ scope \]/);
 		assert.doesNotMatch(html, /Confirm the scope/i);
+		assert.match(html, /width="100%"/);
+		assert.match(html, /max-width:600px;table-layout:fixed;overflow-wrap:anywhere/);
 	});
 
 	test('renders a lightweight auto-reply without proposal-only blocks', () => {

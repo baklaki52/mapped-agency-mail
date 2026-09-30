@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { isHtmlEmpty } from './html';
+import { isHtmlEmpty, linkifyPlainUrls } from './html';
 
 test('treats image tags as content', () => {
 	assert.equal(isHtmlEmpty('<p><img src="x" alt=""></p>'), false);
@@ -23,4 +23,15 @@ test('SSR emptiness decodes numeric and hex whitespace entities', () => {
 	} finally {
 		if (hadParser) globalThis.DOMParser = original;
 	}
+});
+
+test('linkifies bare URLs without nesting existing links', () => {
+	assert.equal(
+		linkifyPlainUrls('<p>Visit https://mapped.agency.</p>'),
+		'<p>Visit <a href="https://mapped.agency">https://mapped.agency</a>.</p>'
+	);
+	assert.equal(
+		linkifyPlainUrls('<a href="https://mapped.agency">mapped.agency</a>'),
+		'<a href="https://mapped.agency">mapped.agency</a>'
+	);
 });
